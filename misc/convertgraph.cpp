@@ -49,6 +49,8 @@ int main(int argv, char** argc) {
         sscanf(buf, "%d%d", &u, &v);
         int uu = relabel(u);
         int vv = relabel(v);
+        if (uu == vv) 
+            continue;
         outEdge[uu].push_back(vv);
         edgeCnt++;
     }
