@@ -68,6 +68,7 @@ mask = []
 for i in range(numVtx):
 #    if i not in blocks[blockID]:
     if i not in eblock:
+#    if True:
         mask.append(i)
 
 pprs = ReadPPRs(pprDir, blocks[blockID], mask)
@@ -79,7 +80,8 @@ print mat.shape
 s = linalg.svd(mat, compute_uv = False)
 print s.shape
 
-print s
+for i in range(len(s)):
+    print s[i]
 
 graphFile.close()
 metisFile.close()
