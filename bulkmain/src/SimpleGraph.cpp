@@ -120,6 +120,8 @@ SimpleGraph* SimpleGraph::readTextFile(FILE* txtFile) {
     double elapse_ms = (end.tv_sec - start.tv_sec) * 1000.0 + (end.tv_usec - start.tv_usec) / 1000.0;
     fprintf(stdout, "INFO: Graph load done, time elapsed: %.2f sec.\n", elapse_ms / 1000.0);
 	fflush(stdout);
+
+	return g;
 }
 
 

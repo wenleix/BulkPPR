@@ -16,11 +16,14 @@
 using namespace std;
 
 vector< vector<int> >* ReadMETISPartitions(FILE* metisFile, int numVertex) {
+//	fprintf(stderr, "here!!\n");
+
 	vector< vector<int> > *blocks = new vector< vector<int> >();
 	for (int i = 0; i < numVertex; i++) {
 		int blockID = -1;
 		int numRead = fscanf(metisFile, "%d", &blockID);
 		assert(numRead == 1);
+//		fprintf(stderr, "blockID: %d\n", blockID);
 
 		if (blockID >= blocks->size()) {
 			blocks->resize(blockID + 1);
@@ -29,7 +32,7 @@ vector< vector<int> >* ReadMETISPartitions(FILE* metisFile, int numVertex) {
 		(*blocks)[blockID].push_back(i);
 	}
 
-	fprintf(stderr, "INFO: # Blocks: %lu .\n", blocks->size());
+	fprintf(stdout, "INFO: # Blocks: %lu .\n", blocks->size());
 	return blocks;
 }
 
@@ -60,13 +63,16 @@ int main(int argc, char** argv) {
 	//	Process the block
 	for (int i = 0; i < (*blocks)[blockID].size(); i++) {
 		int vtxID = (*blocks)[blockID][i];
-		pref[i] = 1.0 - DAMP_FACTOR;
+		fprintf(stderr, "DEBUG: Start for vertex %d .\n", vtxID);
+		pref[vtxID] = 1.0 - DAMP_FACTOR;
 
 		JacobiSolver(g, pref, pprValue, numIter);
 
+		pref[vtxID] = 0.0;
+
 		//	Print out
 		char fnameBuf[1000];
-		sprintf(fnameBuf, "%s/ppr_%d.txt", outDir, i);
+		sprintf(fnameBuf, "%s/ppr_%d.txt", outDir, vtxID);
 		FILE *pprFile = fopen(fnameBuf, "w");
 		printPPRValue(pprFile, pprValue, g->numVertex);
 		fclose(pprFile);

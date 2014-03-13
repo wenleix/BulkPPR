@@ -24,7 +24,7 @@ void JacobiSolver(SimpleGraph *g, double *pref, double *pprValue, int numIter) {
     gettimeofday(&start, NULL);
 
     for (int iIter = 0; iIter < numIter; iIter++) {
-    	memcpy(curValue, pprValue, sizeof(double) * g->numVertex);
+    	memcpy(curValue, pref, sizeof(double) * g->numVertex);
 
         for (int i = 0; i < g->numVertex; i++) {
             if (preValue[i] == 0)
