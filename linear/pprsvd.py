@@ -19,6 +19,7 @@ def ReadBlocks(metisFile):
 
     return (n, blocks)
 
+
 #   Filenames are in the format ppr_%d.txt
 def ReadPPRs(dirname, vidList, mask):
     pprs = []
@@ -33,42 +34,59 @@ def ReadPPRs(dirname, vidList, mask):
 
     return pprs
 
-def GetExtendedBlock(vidList, graphFile):
-    extendedSet = set(vidList)
+
+#   Return a set
+def GetExtendedBlock(vidList, graphFile, expand):
+    if expand == -1:
+        return set()
+
+    #   Read in the graph
+
     firstLine = graphFile.readline()
     parsed = firstLine.split(' ')
     numVtx = int(parsed[0])
-
+    gr = []       # the graph edge list
     restLines = graphFile.readlines()
-    for vid in vidList:
-        outIdStr = restLines[vid].split(' ')[1:]
+    for i in range(len(restLines)):
+        outIdStr = restLines[i].split(' ')[1:]
         outId = [int(s) for s in outIdStr]
-        for oid in outId:
-            extendedSet.add(oid)
+        gr.append(outId)
 
-    return list(extendedSet)
+    assert len(gr) == numVtx
+
+    extendedSet = set(vidList)
+    oldHop = set(vidList)
+    for i in range(expand):
+        newHop = set()
+        for vid in oldHop:
+            newHop |= set(gr[vid])      #   Add the outgoing vertices
+
+        extendedSet |= newHop
+        oldHop = newHop
+
+
+    return extendedSet
 
 
 
-if len(argv) != 5:
-    print 'Usage: %s [Graph-File] [METIS-File] [BlockID] [PPR-Dir]' % (argv[0])
+if len(argv) != 6:
+    print 'Usage: %s [Graph-File] [METIS-File] [BlockID] [Exppand] [PPR-Dir]' % (argv[0])
     sys.exit(1)
 
 graphFile = open(argv[1], 'r')
 metisFile = open(argv[2], 'r')
 blockID = int(argv[3])
-pprDir = argv[4]
+expand = int(argv[4])
+pprDir = argv[5]
 
 (numVtx, blocks) = ReadBlocks(metisFile)
-eblock = GetExtendedBlock(blocks[blockID], graphFile)
+eblock = GetExtendedBlock(blocks[blockID], graphFile, expand)
 print 'Extended Block Size: %d' % (len(eblock))
 
 #   Generate the filter
 mask = []
 for i in range(numVtx):
-#    if i not in blocks[blockID]:
     if i not in eblock:
-#    if True:
         mask.append(i)
 
 pprs = ReadPPRs(pprDir, blocks[blockID], mask)
