@@ -5,6 +5,7 @@ import sys
 from sys import argv
 import numpy as np
 from scipy import linalg
+import random
 
 def ReadBlocks(metisFile):
     lines = metisFile.readlines()
@@ -28,7 +29,12 @@ def ReadPPRs(dirname, vidList):
         fname = '%s/ppr_%d.txt' % (dirname, vid)
         pprFile = open(fname, 'r')
         lines = pprFile.readlines()
-        pprvector = np.array([float(l) for l in lines])
+        vals = [float(l) for l in lines]
+        nonzero = len(filter(lambda x: x != 0, vals))
+        if nonzero < 100:		#	Skip those uninteresting guys...
+            continue
+
+        pprvector = np.array(vals)
         pprFile.close()
 
         pprs.append(pprvector)
@@ -83,11 +89,12 @@ def EvaluatePrec(approx, truth, K):
     assert len(approx) == len(truth)
     n = len(approx)
 
-    appList = []
-    trueList = []
-    for i in range(n):
-        appList.append((i, approx[i]))
-        trueList.append((i, truth[i]))
+    appList = [(i, approx[i]) for i in range(n)]
+    trueList = [(i, truth[i]) for i in range(n)]
+
+    # 	Random shuffle for potential tie
+    random.shuffle(appList)
+    random.shuffle(trueList)	
 
     appList.sort(key = lambda tup: tup[1], reverse = True)
     trueList.sort(key = lambda tup: tup[1], reverse = True)
@@ -119,6 +126,7 @@ print 'Extended Block Size: %d' % (len(eblock))
 pprs = ReadPPRs(pprDir, blocks[blockID])
 
 print 'Num vectors: %d' % (len(pprs))
+sys.stdout.flush()
 
 #   Generate the filter
 mask = []
@@ -146,6 +154,7 @@ for i in range(mm):
 fullmat = np.vstack(pprs)
 print 'Frob\t%d\t%.10f' % (0, np.linalg.norm(fullmat - approx, 'fro'))
 print 'Prec\t%d\t%.3f' % (0, sumprec / mm)
+sys.stdout.flush()
 for i in range(len(s)):
     sumprec = 0.0
     for j in range(mm):
@@ -156,6 +165,7 @@ for i in range(len(s)):
 #    approx += comp
     print 'Frob\t%d\t%.10f' % (i + 1, np.linalg.norm(fullmat - approx, 'fro'))
     print 'Prec\t%d\t%.3f' % (i + 1, sumprec / mm)
+    sys.stdout.flush()
 
 graphFile.close()
 metisFile.close()
