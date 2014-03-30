@@ -1,2 +1,5 @@
-Preprocess tools :) -- convert Jure's format into my format, and also convert into METIS format.
+Preprocess tools and some quick-and-dirty tools  
+    - Convert Jure's format into my format
+    - Convert into METIS format.
+    - Evaluate the block expansion size for randomly chosen 100 blocks.
 

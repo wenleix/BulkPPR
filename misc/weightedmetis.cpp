@@ -1,10 +1,12 @@
-//  Convert to the METIS format :)
+//  Convert to the METIS format, with edge weights now!! :)
 
 #include <cstdio>
 #include <cstdlib>
 #include <unordered_set>
 
 using namespace std;
+
+const int FACTOR = 1000;
 
 int main(int argc, char** argv) {
 	if (argc != 3) {
@@ -40,12 +42,14 @@ int main(int argc, char** argv) {
     fprintf(stdout, "Double Check: Original # Edges: %d, count Edges: %d. \n", 
             countEdges, numEdge);
 
-	fprintf(metisFile, "%d %d\n", numVtx, countEdges / 2);
+	fprintf(metisFile, "%d %d 001\n", numVtx, countEdges / 2);
 	for (int i = 0; i < numVtx; i++) {
 		for (unordered_set<int>::iterator it = neighborVertex[i].begin();
 				it != neighborVertex[i].end(); it++) {
 			//	Metis doesn't require the vertex list to be sorted
-			fprintf(metisFile, "%d ", (*it) + 1);
+            double estWeight = 1.0 / neighborVertex[i].size() + 1.0 / neighborVertex[*it].size();
+            int intWeight = (int)(estWeight * FACTOR) + 1;
+			fprintf(metisFile, "%d %d ", (*it) + 1, intWeight);
 		}
 		fprintf(metisFile, "\n");
 	}
