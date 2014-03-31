@@ -56,15 +56,15 @@ int main(int argc, char** argv) {
 	fprintf(stderr, "Sort/Uniq complete!\n");
 
 	//	Count # edges
-	int countEdges = 0;
+	long long countEdges = 0;
 	for (int i = 0; i < numVtx; i++)
 		countEdges += neighborVertex[i].size();
 
 	//	Write out
-    fprintf(stdout, "Double Check: Original # Edges: %d, count Edges: %d. \n", 
+    fprintf(stdout, "Double Check: Original # Edges: %lldd, count Edges: %d. \n", 
             countEdges, numEdge);
 
-	fprintf(metisFile, "%d %d\n", numVtx, countEdges / 2);
+	fprintf(metisFile, "%d %lld\n", numVtx, countEdges / 2);
 	for (int i = 0; i < numVtx; i++) {
 		for (auto it = neighborVertex[i].begin();
 				it != neighborVertex[i].end(); it++) {
