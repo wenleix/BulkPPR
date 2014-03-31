@@ -58,7 +58,5 @@ private:
     }
 };
 
-void removeNeighbor(SimpleGraph* g, int root, double *rank);
-
 #endif
 

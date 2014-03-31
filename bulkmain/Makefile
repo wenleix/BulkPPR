@@ -1,12 +1,12 @@
 CC = g++
 LD = g++
 
-CFLAGS=-O2 
+CFLAGS=-O2 -std=c++0x
 LFLAGS=-O2
 
 .PHONY : clean 
 
-all: bin/BlockPPR
+all: bin/BlockPPR bin/BlockExpansion
 
 # Objective Files
 obj/SimpleGraph.o: include/SimpleGraph.h src/SimpleGraph.cpp
@@ -21,6 +21,11 @@ bin/BlockPPR: src/BlockPPR.cpp include/SimpleGraph.h include/PPRCommon.h \
 	obj/SimpleGraph.o obj/PPRCommon.o
 	$(CC) $(CFLAGS) src/BlockPPR.cpp obj/SimpleGraph.o obj/PPRCommon.o -I./include \
 	-o bin/BlockPPR
+	
+bin/BlockExpansion: src/BlockExpansion.cpp include/SimpleGraph.h obj/SimpleGraph.o
+	$(CC) $(CFLAGS) src/BlockExpansion.cpp obj/SimpleGraph.o -I./include \
+	-o bin/BlockExpansion
+ 
 
 clean:
 	rm bin/* obj/*

@@ -59,6 +59,11 @@ void JacobiSolver(SimpleGraph *g, double *pref, double *pprValue, int numIter) {
         if (pprValue[i] != 0.0) nonZeroCount++;
     fprintf(stdout, "DEBUG: # non zero entries / All vertex: %d / %d\n", nonZeroCount, g->numVertex);
 
+    gettimeofday(&end, NULL);
+
+    double elapse_ms = (end.tv_sec - start.tv_sec) * 1000.0 + (end.tv_usec - start.tv_usec) / 1000.0;
+    fprintf(stdout, "INFO: Jacobi Solver Running Time: %.2f sec.\n", elapse_ms / 1000.0);
+
 
     delete [] preValue;
     delete [] curValue;
