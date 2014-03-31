@@ -6,7 +6,7 @@ LFLAGS=-O2
 
 .PHONY : clean 
 
-all: ConvertGraph Convert2Metis BinGraph2Metis
+all: ConvertGraph Convert2Metis BinGraph2Metis ConvertTwitterGraph
 	
 # 	Executables
 ConvertGraph: ConvertGraph.cpp
@@ -18,6 +18,9 @@ Convert2Metis: Convert2Metis.cpp
 BinGraph2Metis: BinGraph2Metis.cpp
 	$(CC) $(CFLAGS) BinGraph2Metis.cpp -o BinGraph2Metis
 
+ConvertTwitterGraph: ConvertTwitterGraph.cpp
+	$(CC) $(CFLAGS) ConvertTwitterGraph.cpp -o ConvertTwitterGraph
+
 clean:
-	rm ConvertGraph Convert2Metis BinGraph2Metis
+	rm ConvertGraph Convert2Metis BinGraph2Metis ConvertTwitterGraph
 
