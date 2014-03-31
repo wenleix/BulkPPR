@@ -94,7 +94,7 @@ int main(int argc, char **argv) {
 	srand(128827);
 	random_shuffle(blockIdx, blockIdx + numBlock);
 	int processedBlocks = 0;
-	int sumVtx[NumExpand + 1] = {0}, sumEdge[NumExpand + 1] = {0};
+	long long sumVtx[NumExpand + 1] = {0}, sumEdge[NumExpand + 1] = {0};
 	fprintf(stderr, "DEBUG: Start to count size of blocks!\n");
 	for (int i = 0; i < numBlock; i++) {
 		int blkId = blockIdx[i];
