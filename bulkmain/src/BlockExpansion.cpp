@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <algorithm>
+#include <cstring>
 #include <unordered_set>
 
 #include "SimpleGraph.h"
@@ -74,10 +75,23 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
-	FILE *gfile = fopen(argv[1], "r");
+	bool txtFile = true;
+	if (strcmp(argv[1] + strlen(argv[1]) - 4, ".txt") == 0) {
+		txtFile = true;
+		fprintf(stdout, "INFO: txt file!\n");
+	}
+	else if (strcmp(argv[1] + strlen(argv[1]) - 4, ".bin") == 0) {
+		txtFile = false;
+		fprintf(stdout, "INFO: bin file!\n");
+	}
+	else {
+		assert(false);
+	}
+
+	FILE *gfile = txtFile ? fopen(argv[1], "r") : fopen(argv[1], "rb"); 
 	FILE *metisFile = fopen(argv[2], "r");
 
-	SimpleGraph *g = SimpleGraph::readTextFile(gfile);
+	SimpleGraph *g = txtFile ? SimpleGraph::readTextFile(gfile) : SimpleGraph::readBinaryFile(gfile);
 	int *blockID = new int[g->numVertex];
 	int numBlock = ReadMetisFile(metisFile, blockID, g->numVertex);
 
