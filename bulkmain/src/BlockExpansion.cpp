@@ -27,13 +27,13 @@ int ReadMetisFile(FILE *metisFile, int *blockID, int numVertex) {
 	return maxBlockID + 1;
 }
 
-int CountInnerEdge(SimpleGraph *g, const unordered_set<int>& eblock) {
+int CountInnerEdge(SimpleGraph *g, vector<int>& eblock, bool *inBlock) {
 	int numEdges = 0;
 	for (int vid : eblock) {
 		SimpleVertex *vtx = g->getVertex(vid);
 		for (int j = 0; j < vtx->outDeg; j++) {
 			int dstId = vtx->outVtx[j];
-			if (eblock.find(dstId) != eblock.end())
+			if (inBlock[dstId])
 				numEdges++;
 		}
 	}
@@ -44,10 +44,15 @@ int CountInnerEdge(SimpleGraph *g, const unordered_set<int>& eblock) {
 void BlockExpand(SimpleGraph *g, const vector<int>& block, int numVtx[], int numEdge[], int nexpand) {
 //	fprintf(stderr, "DEBUG: Start Block Expansion!\n");
 
-	unordered_set<int> expandedBlock(block.begin(), block.end());
+	vector<int> expandedBlock(block.begin(), block.end());
+	bool *inBlock = new bool[g->numVertex];
+	memset(inBlock, 0, sizeof(bool) * g->numVertex);
+	for (int vid : expandedBlock)
+		inBlock[vid] = true;
+
 	//	Start with the original block
 	numVtx[0] = expandedBlock.size();
-	numEdge[0] = CountInnerEdge(g, expandedBlock);
+	numEdge[0] = CountInnerEdge(g, expandedBlock, inBlock);
 
 	for (int expand = 1; expand <= nexpand; expand++) {
 		//	Expand out
@@ -56,16 +61,19 @@ void BlockExpand(SimpleGraph *g, const vector<int>& block, int numVtx[], int num
 			SimpleVertex *vtx = g->getVertex(vid);
 			for (int j = 0; j < vtx->outDeg; j++) {
 				int dstId = vtx->outVtx[j];
-				if (expandedBlock.find(dstId) == expandedBlock.end())	//	New boundary vertex
+				if (!inBlock[dstId]) {	//	New boundary vertex
 					newBoundary.push_back(dstId);
+					inBlock[dstId] = true;
+				}
 			}
 		}
-		expandedBlock.insert(newBoundary.begin(), newBoundary.end());
+		expandedBlock.insert(expandedBlock.end(), newBoundary.begin(), newBoundary.end());
 
 		numVtx[expand] = expandedBlock.size();
-		numEdge[expand] = CountInnerEdge(g, expandedBlock);
+		numEdge[expand] = CountInnerEdge(g, expandedBlock, inBlock);
 	}
 
+	delete [] inBlock;
 //	fprintf(stderr, "DEBUG: End Block Expansion!\n");
 }
 
