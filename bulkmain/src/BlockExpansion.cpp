@@ -74,7 +74,10 @@ void BlockExpand(SimpleGraph *g, const vector<int>& block, int numVtx[], int num
 	}
 
 	delete [] inBlock;
-//	fprintf(stderr, "DEBUG: End Block Expansion!\n");
+	fprintf(stderr, "DEBUG: End Block Expansion! ::  ");
+	for (int i = 0; i <= nexpand; i++)
+		fprintf(stderr, " (%d, %d)", numVtx[i], numEdge[i]);
+	fprintf(stderr, "\n");
 }
 
 int main(int argc, char **argv) {
