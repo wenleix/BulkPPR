@@ -3,6 +3,7 @@
 #include <vector>
 #include <algorithm>
 #include <cstring>
+#include <cstdlib>
 #include <unordered_set>
 
 #include "SimpleGraph.h"
@@ -41,7 +42,8 @@ int CountInnerEdge(SimpleGraph *g, vector<int>& eblock, bool *inBlock) {
 	return numEdges;
 }
 
-void BlockExpand(SimpleGraph *g, const vector<int>& block, int numVtx[], int numEdge[], int nexpand) {
+void BlockExpand(SimpleGraph *g, const vector<int>& block, int numVtx[], int numEdge[], 
+		         int outDegCut, int nexpand) {
 //	fprintf(stderr, "DEBUG: Start Block Expansion!\n");
 
 	vector<int> expandedBlock(block.begin(), block.end());
@@ -59,6 +61,7 @@ void BlockExpand(SimpleGraph *g, const vector<int>& block, int numVtx[], int num
 		vector<int> newBoundary;
 		for (int vid : expandedBlock) {
 			SimpleVertex *vtx = g->getVertex(vid);
+			if (vtx->outDeg > outDegCut) continue;
 			for (int j = 0; j < vtx->outDeg; j++) {
 				int dstId = vtx->outVtx[j];
 				if (!inBlock[dstId]) {	//	New boundary vertex
@@ -81,8 +84,8 @@ void BlockExpand(SimpleGraph *g, const vector<int>& block, int numVtx[], int num
 }
 
 int main(int argc, char **argv) {
-	if (argc != 3) {
-		fprintf(stderr, "%s [graph.txt] [metis-partition.txt]\n", argv[0]);
+	if (argc != 4) {
+		fprintf(stderr, "%s [graph.txt] [metis-partition.txt] [OutDegCut]\n", argv[0]);
 		return 1;
 	}
 
@@ -101,6 +104,7 @@ int main(int argc, char **argv) {
 
 	FILE *gfile = txtFile ? fopen(argv[1], "r") : fopen(argv[1], "rb"); 
 	FILE *metisFile = fopen(argv[2], "r");
+	int outDegCut = atoi(argv[3]);
 
 	SimpleGraph *g = txtFile ? SimpleGraph::readTextFile(gfile) : SimpleGraph::readBinaryFile(gfile);
 	int *blockID = new int[g->numVertex];
@@ -128,7 +132,7 @@ int main(int argc, char **argv) {
 			continue;
 
 		int numVtx[NumExpand + 1], numEdge[NumExpand + 1];
-		BlockExpand(g, blocks[blkId], numVtx, numEdge, NumExpand);
+		BlockExpand(g, blocks[blkId], numVtx, numEdge, outDegCut, NumExpand);
 
 		for (int j = 0; j <= NumExpand; j++) {
 			sumVtx[j] += numVtx[j];
