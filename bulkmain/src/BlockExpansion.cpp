@@ -1,4 +1,5 @@
 //	A misc tool to report the size of average expanded block.
+//	Put it here because I am lazy and would like to use SimpleGraph :P
 
 #include <vector>
 #include <algorithm>

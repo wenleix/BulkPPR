@@ -6,7 +6,7 @@ LFLAGS=-O2
 
 .PHONY : clean 
 
-all: bin/BlockPPR bin/BlockExpansion
+all: bin/BlockPPR bin/BlockExpansion bin/BoundaryVtxCount
 
 # Objective Files
 obj/SimpleGraph.o: include/SimpleGraph.h src/SimpleGraph.cpp
@@ -26,6 +26,10 @@ bin/BlockExpansion: src/BlockExpansion.cpp include/SimpleGraph.h obj/SimpleGraph
 	$(CC) $(CFLAGS) src/BlockExpansion.cpp obj/SimpleGraph.o -I./include \
 	-o bin/BlockExpansion
  
+bin/BoundaryVtxCount: src/BoundaryVtxCount.cpp include/SimpleGraph.h obj/SimpleGraph.o 
+	$(CC) $(CFLAGS) src/BoundaryVtxCount.cpp obj/SimpleGraph.o -I./include \
+	-o bin/BoundaryVtxCount
+
 
 clean:
 	rm bin/* obj/*
